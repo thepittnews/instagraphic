@@ -104,7 +104,7 @@
         heightConstraints.storyTextLines = 1;
       }
 
-      var storyTextLinesHeight = 16 + (storyTextLines.length * 16);
+      var storyTextLinesHeight = heightConstraints.storyTextLines * 16;
       var startStoryText = bylineHeight + (540 - (601/1.9) - (bylineHeight + 2) - storyTextLinesHeight) / 2;
 
       if (storyTextLines.length > 0) {
