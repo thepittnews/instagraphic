@@ -99,27 +99,14 @@
           }
         }
 
-        var storyText1 = storyTextBySpaces.slice(storyTextLines[0][0], storyTextLines[0][1]).join(' ');
-        if (storyTextLines.length === 2) {
-          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1] + 1).join(' ');
-        } else if (storyTextLines.length === 3) {
-          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1]).join(' ');
-          var storyText3 = storyTextBySpaces.slice(storyTextLines[2][0], storyTextLines[2][1] + 1).join(' ');
-        } else if (storyTextLines.length === 4) {
-          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1]).join(' ');
-          var storyText3 = storyTextBySpaces.slice(storyTextLines[2][0], storyTextLines[2][1]).join(' ');
-          var storyText4 = storyTextBySpaces.slice(storyTextLines[3][0], storyTextLines[3][1] + 1).join(' ');
-        } else {
-          var storyText1 = storyText;
+        for(var lineNum = 0; lineNum < storyTextLines.length; lineNum++) {
+          const lastLineEl = lineNum === storyTextLines.length - 1 ? 1 : 0;
+          const text = storyTextBySpaces.slice(storyTextLines[lineNum][0], storyTextLines[lineNum][1] + lastLineEl).join(' ');
+          ctx.fillText(text, 20, startStoryText + 16 + (16*lineNum));
         }
-       } else {
-        var storyText1 = storyText;
-       }
-
-      ctx.fillText(storyText1, 20, startStoryText + 16);
-      if (storyText2) ctx.fillText(storyText2, 20, startStoryText + 32);
-      if (storyText3) ctx.fillText(storyText3, 20, startStoryText + 48);
-      if (storyText4) ctx.fillText(storyText4, 20, startStoryText + 64);
+      } else {
+        ctx.fillText(storyText, 20, startStoryText + 16);
+      }
 
       // ** IMAGE
       img = new Image();
