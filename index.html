@@ -1,27 +1,40 @@
 <!DOCTYPE html>
 <head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 </head>
 <body>
   <div style="display: flex;">
-    <div style="flex: 1">
+    <div style="flex: 1;">
       <canvas id="canvas" width="540" height="540" style="border:1px solid #d3d3d3;">
     </div>
 
-    <div style="padding-left: 10px; flex: 1">
-      <h1 style="text-align: center">Form</h1>
+    <div style="flex: 2; margin-left: 3%; margin-right: 3%;">
+      <h1 class="text-center">Instagraphic</h1>
 
-      <input id="headline" value="Pitt to host fall sports on campus without attendance restrictions" />
-      <br>
-      <input id="byline" value="Stephen Thompson, Senior Staff Writer" />
-      <br>
-      <textarea id="storytext">Pitt athletics is hoping to take a big step back towards pre-pandemic operations this fall. According to a report from the Pittsburgh Post-Gazette on Wednesday afternoon, Pitt plans on open on-campus venues to full capacity for fall sports this year, with some regulations for spectators still in place.</textarea>
-      <br>
-      <input id="imageurl" value="https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg" />
-      <br><br>
+      <form>
+        <div class="mb-3">
+          <label for="headline" class="form-label">Headline</label>
+          <input type="text" class="form-control" id="headline" value="Pitt to host fall sports on campus without attendance restrictions">
+        </div>
 
-      <button id="regenerate">Regenerate</button>
-      <br>
-      <button id="download">Download</button>
+        <div class="mb-3">
+          <label for="byline" class="form-label">Byline</label>
+          <input type="text" class="form-control" id="byline" value="Stephen Thompson, Senior Staff Writer">
+        </div>
+
+        <div class="mb-3">
+          <label for="storyText" class="form-label">Text</label>
+          <textarea class="form-control" id="storyText">Pitt athletics is hoping to take a big step back towards pre-pandemic operations this fall. According to a report from the Pittsburgh Post-Gazette on Wednesday afternoon, Pitt plans on open on-campus venues to full capacity for fall sports this year, with some regulations for spectators still in place.</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="imageUrl" class="form-label">Image URL</label>
+          <input type="text" class="form-control" id="imageUrl" value="https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="regenerate">Regenerate</button>
+        <button class="btn btn-success" id="download">Download</button>
+      </form>
     </div>
   </div>
 
@@ -116,16 +129,18 @@
         'https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg'
       );
 
-      document.getElementById('regenerate').addEventListener('click', () => {
+      document.getElementById('regenerate').addEventListener('click', (event) => {
+        event.preventDefault();
         paintCanvas(
           document.getElementById('headline').value,
           document.getElementById('byline').value,
-          document.getElementById('storytext').value,
-          document.getElementById('imageurl').value,
+          document.getElementById('storyText').value,
+          document.getElementById('imageUrl').value,
         );
       });
 
-      document.getElementById('download').addEventListener('click', () => {
+      document.getElementById('download').addEventListener('click', (event) => {
+        event.preventDefault();
         const c = document.getElementById("canvas");
         const img = c.toDataURL("image/png");
         document.write('<img src="'+img+'"/>');
