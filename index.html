@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<head>
+</head>
+<body>
+  <div style="display: flex;">
+    <div style="flex: 1">
+      <canvas id="canvas" width="540" height="540" style="border:1px solid #d3d3d3;">
+    </div>
+
+    <div style="padding-left: 10px; flex: 1">
+      <h1 style="text-align: center">Form</h1>
+
+      <input id="headline" value="Pitt to host fall sports on campus without attendance restrictions" />
+      <br>
+      <input id="byline" value="Stephen Thompson, Senior Staff Writer" />
+      <br>
+      <textarea id="storytext">Pitt athletics is hoping to take a big step back towards pre-pandemic operations this fall. According to a report from the Pittsburgh Post-Gazette on Wednesday afternoon, Pitt plans on open on-campus venues to full capacity for fall sports this year, with some regulations for spectators still in place.</textarea>
+      <br>
+      <input id="imageurl" value="https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg" />
+      <br><br>
+
+      <button id="regenerate">Regenerate</button>
+      <br>
+      <button id="download">Download</button>
+    </div>
+  </div>
+
+  <script>
+    function paintCanvas(headline, byline, storyText, imageurl) {
+      var c = document.getElementById("canvas");
+      c.width = 542;
+      c.height = 542;
+
+      var ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, c.width, c.height);
+
+      logo = new Image();
+      logo.src = 'https://pittnews.com/wp-content/uploads/2018/07/mini-header1.png';
+      logo.onload = function(){
+        ctx.drawImage(logo, (540 - (480/2.8))/2, 0, 480/2.8, 132/2.8);
+        // 480 x 132 ratio
+      }
+
+      if (ctx.measureText(headline).width >= 190) {
+        var splitHeadline = headline.split(' ');
+        var headline1 = splitHeadline.slice(0, (splitHeadline.length / 2)).join(' ');
+        var headline2 = splitHeadline.slice((splitHeadline.length / 2), splitHeadline.length).join(' ');
+      } else {
+        var headline1 = headline;
+        var headline2 = '';
+      }
+
+      ctx.font = '24px Aleo';
+      ctx.textAlign = 'center';
+      ctx.fillText(headline1, 270, (132/2.8) + 25);
+      ctx.fillText(headline2, 270, (132/2.8) + 49);
+
+      ctx.font = '16px Minion Pro';
+      ctx.textAlign = 'center';
+      ctx.fillText(`By ${byline}`, 270, 125);
+
+      var startStoryText = (540 - (601/1.9) - 125 - 64) / 2;
+      ctx.font = '14px Minion Pro';
+      ctx.textAlign = 'start';
+
+      if (ctx.measureText(storyText).width >= 465) {
+        var storyTextLines = [[0, 0, 0]];
+        var storyTextBySpaces = storyText.split(' ');
+        var storyTextBySpacesWidths = storyTextBySpaces.map((t) => ctx.measureText(t).width);
+        for(var i = 0; i < storyTextBySpacesWidths.length; i++) {
+          var storyTextBySpaceWidth = storyTextBySpacesWidths[i];
+          var currentStoryTextLine = storyTextLines[storyTextLines.length - 1];
+          if (currentStoryTextLine[2] + storyTextBySpaceWidth <= 465) {
+            currentStoryTextLine[1] = i;
+            currentStoryTextLine[2] += storyTextBySpaceWidth;
+          } else {
+            storyTextLines.push([i - 1, i, storyTextBySpaceWidth]);
+          }
+        }
+
+        var storyText1 = storyTextBySpaces.slice(storyTextLines[0][0], storyTextLines[0][1]).join(' ');
+        if (storyTextLines.length === 2) {
+          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1] + 1).join(' ');
+        } else if (storyTextLines.length === 3) {
+          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1]).join(' ');
+          var storyText3 = storyTextBySpaces.slice(storyTextLines[2][0], storyTextLines[2][1] + 1).join(' ');
+        } else if (storyTextLines.length === 4) {
+          var storyText2 = storyTextBySpaces.slice(storyTextLines[1][0], storyTextLines[1][1]).join(' ');
+          var storyText3 = storyTextBySpaces.slice(storyTextLines[2][0], storyTextLines[2][1]).join(' ');
+          var storyText4 = storyTextBySpaces.slice(storyTextLines[3][0], storyTextLines[3][1] + 1).join(' ');
+        } else {
+          var storyText1 = storyText;
+        }
+       } else {
+        var storyText1 = storyText;
+       }
+
+      ctx.fillText(storyText1, 10, startStoryText + 125 + 16);
+      if (storyText2) ctx.fillText(storyText2, 10, startStoryText + 125 + 32);
+      if (storyText3) ctx.fillText(storyText3, 10, startStoryText + 125 + 48);
+      if (storyText4) ctx.fillText(storyText4, 10, startStoryText + 125 + 64);
+
+      img = new Image();
+      img.src = imageurl;
+      img.onload = function(){
+        ctx.drawImage(img, (540 - (900/1.9))/2, 230, 900/1.9, 601/1.9);
+        // 900 x 601 ratio
+      }
+    }
+
+    window.onload = function() {
+      paintCanvas(
+        'Pitt to host fall sports on campus without attendance restrictions',
+        'Stephen Thompson, Senior Staff Writer',
+        'Pitt athletics is hoping to take a big step back towards pre-pandemic operations this fall. According to a report from the Pittsburgh Post-Gazette on Wednesday afternoon, Pitt plans on open on-campus venues to full capacity for fall sports this year, with some regulations for spectators still in place.',
+        'https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg'
+      );
+
+      document.getElementById('regenerate').addEventListener('click', () => {
+        paintCanvas(
+          document.getElementById('headline').value,
+          document.getElementById('byline').value,
+          document.getElementById('storytext').value,
+          document.getElementById('imageurl').value,
+        );
+      });
+
+      document.getElementById('download').addEventListener('click', () => {
+        const c = document.getElementById("canvas");
+        const img = c.toDataURL("image/png");
+        document.write('<img src="'+img+'"/>');
+      });
+    };
+  </script>
+</body>
