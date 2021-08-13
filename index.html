@@ -80,7 +80,7 @@
       ctx.fillText(`By ${byline}`, 270, bylineHeight);
 
       // ** TEXT
-      var startStoryText = (540 - (601/1.9) - (bylineHeight + 2) - 64) / 2;
+      var startStoryText = bylineHeight + (540 - (601/1.9) - (bylineHeight + 2) - 64) / 2;
       ctx.font = '14px Minion Pro';
       ctx.textAlign = 'start';
 
@@ -116,10 +116,10 @@
         var storyText1 = storyText;
        }
 
-      ctx.fillText(storyText1, 20, startStoryText + 125 + 16);
-      if (storyText2) ctx.fillText(storyText2, 20, startStoryText + 125 + 32);
-      if (storyText3) ctx.fillText(storyText3, 20, startStoryText + 125 + 48);
-      if (storyText4) ctx.fillText(storyText4, 20, startStoryText + 125 + 64);
+      ctx.fillText(storyText1, 20, startStoryText + 16);
+      if (storyText2) ctx.fillText(storyText2, 20, startStoryText + 32);
+      if (storyText3) ctx.fillText(storyText3, 20, startStoryText + 48);
+      if (storyText4) ctx.fillText(storyText4, 20, startStoryText + 64);
 
       // ** IMAGE
       img = new Image();
