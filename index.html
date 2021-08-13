@@ -76,7 +76,8 @@
       // ** BYLINE
       ctx.font = '16px Minion Pro';
       ctx.textAlign = 'center';
-      ctx.fillText(`By ${byline}`, 270, 125);
+      const bylineHeight = heightConstraints.headlineRows === 2 ? 122 : 98;
+      ctx.fillText(`By ${byline}`, 270, bylineHeight);
 
       // ** TEXT
       var startStoryText = (540 - (601/1.9) - 125 - 64) / 2;
