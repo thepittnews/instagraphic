@@ -47,6 +47,11 @@
       var ctx = c.getContext("2d");
       ctx.clearRect(0, 0, c.width, c.height);
 
+      const heightConstraints = {
+        headlineRows: ctx.measureText(headline).width >= 190 ? 2 : 1,
+      };
+
+      // ** LOGO
       logo = new Image();
       logo.src = 'https://pittnews.com/wp-content/uploads/2018/07/mini-header1.png';
       logo.onload = function(){
@@ -54,24 +59,26 @@
         // 480 x 132 ratio
       }
 
-      if (ctx.measureText(headline).width >= 190) {
-        var splitHeadline = headline.split(' ');
-        var headline1 = splitHeadline.slice(0, (splitHeadline.length / 2)).join(' ');
-        var headline2 = splitHeadline.slice((splitHeadline.length / 2), splitHeadline.length).join(' ');
-      } else {
-        var headline1 = headline;
-        var headline2 = '';
-      }
-
+      // ** HEADLINE
       ctx.font = '24px Aleo';
       ctx.textAlign = 'center';
-      ctx.fillText(headline1, 270, (132/2.8) + 25);
-      ctx.fillText(headline2, 270, (132/2.8) + 49);
+      if (heightConstraints.headlineRows === 1) {
+        ctx.fillText(headline, 270, (132/2.8) + 25);
+      } else if (heightConstraints.headlineRows === 2) {
+        var splitHeadline = headline.split(' ');
+        var headline1 = splitHeadline.slice(0, (splitHeadline.length / 2)).join(' ');
+        ctx.fillText(headline1, 270, (132/2.8) + 25);
 
+        var headline2 = splitHeadline.slice((splitHeadline.length / 2), splitHeadline.length).join(' ');
+        ctx.fillText(headline2, 270, (132/2.8) + 49);
+      }
+
+      // ** BYLINE
       ctx.font = '16px Minion Pro';
       ctx.textAlign = 'center';
       ctx.fillText(`By ${byline}`, 270, 125);
 
+      // ** TEXT
       var startStoryText = (540 - (601/1.9) - 125 - 64) / 2;
       ctx.font = '14px Minion Pro';
       ctx.textAlign = 'start';
@@ -113,6 +120,7 @@
       if (storyText3) ctx.fillText(storyText3, 20, startStoryText + 125 + 48);
       if (storyText4) ctx.fillText(storyText4, 20, startStoryText + 125 + 64);
 
+      // ** IMAGE
       img = new Image();
       img.src = imageurl;
       img.onload = function(){
