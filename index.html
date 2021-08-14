@@ -12,6 +12,22 @@
       <h1 class="text-center">Instagraphic</h1>
 
       <form>
+        <div class="row g-3 text-center">
+          <div class="col-sm-3">
+            <label for="cmsUrl" class="col-form-label">WordPress Import</label>
+          </div>
+
+          <div class="col-sm-7">
+            <input type="text" class="form-control" id="cmsUrl" value="https://pittnews.com/article/166200/sports/pitt-to-host-fall-sports-on-campus-without-attendance-restrictions/">
+          </div>
+
+          <div class="col-sm-2">
+            <button class="btn btn-warning" id="cmsButton">Import</button>
+          </div>
+        </div>
+
+        <hr>
+
         <div class="mb-3">
           <label for="headline" class="form-label">Headline</label>
           <input type="text" class="form-control" id="headline" value="Pitt to host fall sports on campus without attendance restrictions">
@@ -63,20 +79,20 @@
       ctx.font = '24px Aleo';
       ctx.textAlign = 'center';
       if (heightConstraints.headlineRows === 1) {
-        ctx.fillText(headline, 270, (132/2.8) + 25);
+        ctx.fillText(headline, 270, (132/2.8) + 24);
       } else if (heightConstraints.headlineRows === 2) {
         var splitHeadline = headline.split(' ');
         var headline1 = splitHeadline.slice(0, (splitHeadline.length / 2)).join(' ');
-        ctx.fillText(headline1, 270, (132/2.8) + 25);
+        ctx.fillText(headline1, 270, (132/2.8) + 24);
 
         var headline2 = splitHeadline.slice((splitHeadline.length / 2), splitHeadline.length).join(' ');
-        ctx.fillText(headline2, 270, (132/2.8) + 49);
+        ctx.fillText(headline2, 270, (132/2.8) + 48);
       }
 
       // ** BYLINE
       ctx.font = '16px Minion Pro';
       ctx.textAlign = 'center';
-      const bylineHeight = heightConstraints.headlineRows === 1 ? 98 : 122;
+      const bylineHeight = heightConstraints.headlineRows === 1 ? (132/2.8) + 24 + 24 : (132/2.8) + 48 + 24;
       ctx.fillText(`By ${byline}`, 270, bylineHeight);
 
       // ** TEXT
@@ -126,22 +142,38 @@
       }
     }
 
-    window.onload = function() {
+    function paintCanvasFromForm() {
       paintCanvas(
-        'Pitt to host fall sports on campus without attendance restrictions',
-        'Stephen Thompson, Senior Staff Writer',
-        'Pitt athletics is hoping to take a big step back towards pre-pandemic operations this fall. According to a report from the Pittsburgh Post-Gazette on Wednesday afternoon, Pitt plans on open on-campus venues to full capacity for fall sports this year, with some regulations for spectators still in place.',
-        'https://pittnews.com/wp-content/uploads/2021/08/S_FB_JM_1.jpg'
+        document.getElementById('headline').value,
+        document.getElementById('byline').value,
+        document.getElementById('storyText').value,
+        document.getElementById('imageUrl').value,
       );
+    }
+
+    window.onload = function() {
+      paintCanvasFromForm();
+
+      document.getElementById('cmsButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        var r = new RegExp(/pittnews.com\/article\/(\d+)\//);
+        var id = document.getElementById('cmsUrl').value.match(r)[1];
+
+        if (!id) return alert ('Invalid CMS url');
+
+        fetch(`https://pittnews.com/wp-json/wp/v2/posts/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+          document.getElementById('headline').value = res.title.rendered;
+          document.getElementById('byline').value = `${res.writer.join(', ')} | ${res.jobtitle.join('')}`;
+          document.getElementById('storyText').value = res.excerpt.rendered.replace("<p>", "").replace("</p>", "");
+          document.getElementById('imageUrl').value = res.yoast_head_json.og_image[0].url;
+          paintCanvasFromForm();
+        });
+      });
 
       document.getElementById('regenerate').addEventListener('click', (event) => {
         event.preventDefault();
-        paintCanvas(
-          document.getElementById('headline').value,
-          document.getElementById('byline').value,
-          document.getElementById('storyText').value,
-          document.getElementById('imageUrl').value,
-        );
       });
 
       document.getElementById('download').addEventListener('click', (event) => {
