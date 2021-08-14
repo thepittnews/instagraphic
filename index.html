@@ -34,8 +34,13 @@
         </div>
 
         <div class="mb-3">
-          <label for="byline" class="form-label">Byline</label>
-          <input type="text" class="form-control" id="byline" value="Stephen Thompson, Senior Staff Writer">
+          <label for="writerByline" class="form-label">Writer Byline</label>
+          <input type="text" class="form-control" id="writerByline" value="Stephen Thompson, Senior Staff Writer">
+        </div>
+
+        <div class="mb-3">
+          <label for="photoByline" class="form-label">Photo Byline</label>
+          <input type="text" class="form-control" id="photoByline" value="TPN File Photo">
         </div>
 
         <div class="mb-3">
@@ -55,7 +60,7 @@
   </div>
 
   <script>
-    function paintCanvas(headline, byline, storyText, imageurl) {
+    function paintCanvas(headline, writerByline, photoByline, storyText, imageurl) {
       var c = document.getElementById("canvas");
       c.width = 542;
       c.height = 542;
@@ -89,11 +94,15 @@
         ctx.fillText(headline2, 270, (132/2.8) + 48);
       }
 
-      // ** BYLINE
+      // ** WRITER BYLINE
       ctx.font = '16px Minion Pro';
       ctx.textAlign = 'center';
-      const bylineHeight = heightConstraints.headlineRows === 1 ? (132/2.8) + 24 + 24 : (132/2.8) + 48 + 24;
-      ctx.fillText(`By ${byline}`, 270, bylineHeight);
+      const writerBylineHeight = heightConstraints.headlineRows === 1 ? (132/2.8) + 24 + 24 : (132/2.8) + 48 + 24;
+      ctx.fillText(`Story by ${writerByline}`, 270, writerBylineHeight);
+
+      // ** PHOTO BYLINE
+      const photoBylineHeight = writerBylineHeight + 24;
+      ctx.fillText(`Photo by ${photoByline}`, 270, photoBylineHeight);
 
       // ** TEXT
       var storyTextLines = [];
@@ -121,7 +130,7 @@
       }
 
       var storyTextLinesHeight = heightConstraints.storyTextLines * 16;
-      var startStoryText = bylineHeight + (540 - (601/1.9) - (bylineHeight + 2) - storyTextLinesHeight) / 2;
+      var startStoryText = photoBylineHeight + (540 - (601/1.9) - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
 
       if (storyTextLines.length > 0) {
         for(var lineNum = 0; lineNum < storyTextLines.length; lineNum++) {
@@ -145,7 +154,8 @@
     function paintCanvasFromForm() {
       paintCanvas(
         document.getElementById('headline').value,
-        document.getElementById('byline').value,
+        document.getElementById('writerByline').value,
+        document.getElementById('photoByline').value,
         document.getElementById('storyText').value,
         document.getElementById('imageUrl').value,
       );
@@ -156,16 +166,17 @@
 
       document.getElementById('cmsButton').addEventListener('click', function(event) {
         event.preventDefault();
+
         var r = new RegExp(/pittnews.com\/article\/(\d+)\//);
         var id = document.getElementById('cmsUrl').value.match(r)[1];
-
         if (!id) return alert ('Invalid CMS url');
 
-        fetch(`https://pittnews.com/wp-json/wp/v2/posts/${id}`)
+        fetch(`https://pittnews.com/wp-json/wp/v2/posts/${id}?`)
         .then((res) => res.json())
         .then((res) => {
           document.getElementById('headline').value = res.title.rendered;
-          document.getElementById('byline').value = `${res.writer.join(', ')} | ${res.jobtitle.join('')}`;
+          document.getElementById('writerByline').value = `${res.writer.join(', ')} , ${res.jobtitle.join('')}`;
+          document.getElementById('photoByline').value = res.photographer.replace('|', ',');
           document.getElementById('storyText').value = res.excerpt.rendered.replace("<p>", "").replace("</p>", "");
           document.getElementById('imageUrl').value = res.yoast_head_json.og_image[0].url;
           paintCanvasFromForm();
@@ -174,6 +185,7 @@
 
       document.getElementById('regenerate').addEventListener('click', (event) => {
         event.preventDefault();
+        paintCanvasFromForm();
       });
 
       document.getElementById('download').addEventListener('click', (event) => {
