@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 </head>
 <body>
   <div style="display: flex;">
@@ -204,9 +205,8 @@
 
       document.getElementById('download').addEventListener('click', (event) => {
         event.preventDefault();
-        const c = document.getElementById("canvas");
-        const img = c.toDataURL("image/png");
-        document.write('<img src="'+img+'"/>');
+        const img = document.getElementById("canvas").toDataURL("image/png");
+        saveAs(img, "graphic.png");
       });
     };
   </script>
