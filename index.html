@@ -115,7 +115,8 @@
 
       // ** PHOTO BYLINE
       const photoBylineHeight = writerBylineHeight + 24;
-      ctx.fillText(`Photo by ${photoByline}`, 270, photoBylineHeight);
+      const photoBylineText = `${photoByline.toLowerCase().includes('file') ? '' : 'Photo by '}${photoByline}`;
+      ctx.fillText(photoBylineText, 270, photoBylineHeight);
 
       // ** TEXT
       var storyTextLines = [];
