@@ -81,6 +81,8 @@
 
       var ctx = c.getContext("2d");
       ctx.clearRect(0, 0, c.width, c.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, c.width, c.height);
 
       const heightConstraints = {
         headlineRows: ctx.measureText(headline).width >= 190 ? 2 : 1,
@@ -95,6 +97,8 @@
       }
 
       // ** HEADLINE
+      // Set fill style back to black for text
+      ctx.fillStyle = "#000000";
       ctx.font = '24px Aleo';
       ctx.textAlign = 'center';
       if (heightConstraints.headlineRows === 1) {
