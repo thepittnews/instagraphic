@@ -200,7 +200,7 @@
         .then((res) => res.json())
         .then((res) => {
           document.getElementById('headline').value = res.title.rendered;
-          document.getElementById('writerByline').value = `${res.writer.join(', ')} , ${res.jobtitle.join('')}`;
+          document.getElementById('writerByline').value = `${res.writer.join(', ')}, ${res.jobtitle.join('')}`;
           document.getElementById('photoByline').value = res.photographer.replace('|', ',');
           document.getElementById('storyText').value = res.excerpt.rendered.replace("<p>", "").replace("</p>", "");
           document.getElementById('imageUrl').value = res.yoast_head_json.og_image[0].url;
