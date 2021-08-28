@@ -162,9 +162,9 @@
       }
 
       var storyTextLinesHeight = canvasConstraints.storyTextLines * 16;
-      var startStoryText = 190;
+      var storyTextStartHeight = 190;
       if (imageStyle === "l") {
-        startStoryText = photoBylineHeight + (540 - 601/1.9 - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
+        storyTextStartHeight = photoBylineHeight + (540 - 601/1.9 - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
       }
 
       if (storyTextLines.length > 0) {
@@ -175,10 +175,10 @@
           var storyTextStartWidth;
           if (imageStyle === "l" || imageStyle === "p-r") storyTextStartWidth = 20;
           if (imageStyle === "p-l") storyTextStartWidth = 280;
-          ctx.fillText(text, storyTextStartWidth, startStoryText + 16 + (16*lineNum));
+          ctx.fillText(text, storyTextStartWidth, storyTextStartHeight + 16 + (16*lineNum));
         }
       } else {
-        ctx.fillText(storyText, 20, startStoryText + 16);
+        ctx.fillText(storyText, 20, storyTextStartHeight + 16);
       }
 
       // ** IMAGE
