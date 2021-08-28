@@ -96,7 +96,7 @@
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, c.width, c.height);
 
-      const heightConstraints = {
+      const canvasConstraints = {
         headlineRows: ctx.measureText(headline).width >= 190 ? 2 : 1,
         maxStoryTextWidth: imageStyle === "l" ? 465 : 215,
       };
@@ -114,9 +114,9 @@
       ctx.fillStyle = "#000000";
       ctx.font = '24px Aleo';
       ctx.textAlign = 'center';
-      if (heightConstraints.headlineRows === 1) {
+      if (canvasConstraints.headlineRows === 1) {
         ctx.fillText(headline, 270, (132/2.8) + 24);
-      } else if (heightConstraints.headlineRows === 2) {
+      } else if (canvasConstraints.headlineRows === 2) {
         var splitHeadline = headline.split(' ');
         var headline1 = splitHeadline.slice(0, (splitHeadline.length / 2)).join(' ');
         ctx.fillText(headline1, 270, (132/2.8) + 24);
@@ -128,7 +128,7 @@
       // ** WRITER BYLINE
       ctx.font = '16px Minion Pro';
       ctx.textAlign = 'center';
-      const writerBylineHeight = heightConstraints.headlineRows === 1 ? (132/2.8) + 24 + 24 : (132/2.8) + 48 + 24;
+      const writerBylineHeight = canvasConstraints.headlineRows === 1 ? (132/2.8) + 24 + 24 : (132/2.8) + 48 + 24;
       ctx.fillText(`Story by ${writerByline}`, 270, writerBylineHeight);
 
       // ** PHOTO BYLINE
@@ -141,14 +141,14 @@
       ctx.font = '14px Minion Pro';
       ctx.textAlign = 'start';
 
-      if (ctx.measureText(storyText).width >= heightConstraints.maxStoryTextWidth) {
+      if (ctx.measureText(storyText).width >= canvasConstraints.maxStoryTextWidth) {
         storyTextLines.push([0, 0, 0]);
         var storyTextBySpaces = storyText.split(' ');
         var storyTextBySpacesWidths = storyTextBySpaces.map((t) => ctx.measureText(t).width);
         for(var i = 0; i < storyTextBySpacesWidths.length; i++) {
           var storyTextBySpaceWidth = storyTextBySpacesWidths[i];
           var currentStoryTextLine = storyTextLines[storyTextLines.length - 1];
-          if (currentStoryTextLine[2] + storyTextBySpaceWidth + (currentStoryTextLine[1] - currentStoryTextLine[0]) <= heightConstraints.maxStoryTextWidth) {
+          if (currentStoryTextLine[2] + storyTextBySpaceWidth + (currentStoryTextLine[1] - currentStoryTextLine[0]) <= canvasConstraints.maxStoryTextWidth) {
             currentStoryTextLine[1] = i;
             currentStoryTextLine[2] += storyTextBySpaceWidth;
           } else {
@@ -156,12 +156,12 @@
           }
         }
 
-        heightConstraints.storyTextLines = storyTextLines.length;
+        canvasConstraints.storyTextLines = storyTextLines.length;
       } else {
-        heightConstraints.storyTextLines = 1;
+        canvasConstraints.storyTextLines = 1;
       }
 
-      var storyTextLinesHeight = heightConstraints.storyTextLines * 16;
+      var storyTextLinesHeight = canvasConstraints.storyTextLines * 16;
       var startStoryText = 190;
       if (imageStyle === "l") {
         startStoryText = photoBylineHeight + (540 - 601/1.9 - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
