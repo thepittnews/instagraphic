@@ -67,6 +67,18 @@
           </div>
         </div>
 
+        <div class="row g-3 mb-3">
+          <label for="imageStyle" class="col-sm-2 col-form-label">Image Style</label>
+
+          <div class="col-sm-10">
+            <select class="form-select" id="imageStyle">
+              <option selected value="l">Landscape</option>
+              <option value="p-l">Portrait left</option>
+              <option value="p-r">Portrait right</option>
+            </select>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary" id="regenerate">Regenerate</button>
         <button class="btn btn-success" id="download">Download</button>
       </form>
@@ -74,7 +86,7 @@
   </div>
 
   <script>
-    function paintCanvas(headline, writerByline, photoByline, storyText, imageurl) {
+    function paintCanvas(headline, writerByline, photoByline, storyText, imageurl, imageStyle) {
       var c = document.getElementById("canvas");
       c.width = 542;
       c.height = 542;
@@ -86,14 +98,15 @@
 
       const heightConstraints = {
         headlineRows: ctx.measureText(headline).width >= 190 ? 2 : 1,
+        maxStoryTextWidth: imageStyle === "l" ? 465 : 215,
       };
 
       // ** LOGO
+      // 480 x 132 ratio
       logo = new Image();
       logo.src = 'https://pittnews.com/wp-content/uploads/2018/07/mini-header1.png';
       logo.onload = function(){
         ctx.drawImage(logo, (540 - (480/2.8))/2, 0, 480/2.8, 132/2.8);
-        // 480 x 132 ratio
       }
 
       // ** HEADLINE
@@ -128,14 +141,14 @@
       ctx.font = '14px Minion Pro';
       ctx.textAlign = 'start';
 
-      if (ctx.measureText(storyText).width >= 465) {
+      if (ctx.measureText(storyText).width >= heightConstraints.maxStoryTextWidth) {
         storyTextLines.push([0, 0, 0]);
         var storyTextBySpaces = storyText.split(' ');
         var storyTextBySpacesWidths = storyTextBySpaces.map((t) => ctx.measureText(t).width);
         for(var i = 0; i < storyTextBySpacesWidths.length; i++) {
           var storyTextBySpaceWidth = storyTextBySpacesWidths[i];
           var currentStoryTextLine = storyTextLines[storyTextLines.length - 1];
-          if (currentStoryTextLine[2] + storyTextBySpaceWidth <= 465) {
+          if (currentStoryTextLine[2] + storyTextBySpaceWidth + (currentStoryTextLine[1] - currentStoryTextLine[0]) <= heightConstraints.maxStoryTextWidth) {
             currentStoryTextLine[1] = i;
             currentStoryTextLine[2] += storyTextBySpaceWidth;
           } else {
@@ -149,25 +162,43 @@
       }
 
       var storyTextLinesHeight = heightConstraints.storyTextLines * 16;
-      var startStoryText = photoBylineHeight + (540 - (601/1.9) - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
+      var startStoryText = 190;
+      if (imageStyle === "l") {
+        startStoryText = photoBylineHeight + (540 - 601/1.9 - (photoBylineHeight + 2) - storyTextLinesHeight) / 2;
+      }
 
       if (storyTextLines.length > 0) {
         for(var lineNum = 0; lineNum < storyTextLines.length; lineNum++) {
           const lastLineEl = lineNum === storyTextLines.length - 1 ? 1 : 0;
           const text = storyTextBySpaces.slice(storyTextLines[lineNum][0], storyTextLines[lineNum][1] + lastLineEl).join(' ');
-          ctx.fillText(text, 20, startStoryText + 16 + (16*lineNum));
+
+          var storyTextStartWidth;
+          if (imageStyle === "l" || imageStyle === "p-r") storyTextStartWidth = 20;
+          if (imageStyle === "p-l") storyTextStartWidth = 280;
+          ctx.fillText(text, storyTextStartWidth, startStoryText + 16 + (16*lineNum));
         }
       } else {
         ctx.fillText(storyText, 20, startStoryText + 16);
       }
 
       // ** IMAGE
+      // 900 x 601 ratio
       img = new Image();
       img.src = imageurl;
       img.onload = function(){
-        ctx.drawImage(img, (540 - (900/1.9))/2, 230, 900/1.9, 601/1.9);
-        // 900 x 601 ratio
-      }
+        if (img.height > img.width && imageStyle === "l") {
+          // Re-trigger function based on calculated image style, only happens when importing from WP
+          return paintCanvas(headline, writerByline, photoByline, storyText, imageurl, "p-l");
+        }
+
+        if (imageStyle === "l") {
+          ctx.drawImage(img, (540 - (900/1.9))/2, 230, 900/1.9, 601/1.9);
+        } else if (imageStyle === "p-l") {
+          ctx.drawImage(img, (540 - (900/1.9))/2, 162, 601/2.5, 900/2.5);
+        } else if (imageStyle === "p-r") {
+          ctx.drawImage(img, 280, 162, 601/2.5, 900/2.5);
+        }
+      };
     }
 
     function paintCanvasFromForm() {
@@ -177,6 +208,7 @@
         document.getElementById('photoByline').value,
         document.getElementById('storyText').value,
         document.getElementById('imageUrl').value,
+        document.getElementById('imageStyle').value,
       );
     }
 
@@ -193,11 +225,13 @@
         fetch(`https://pittnews.com/wp-json/wp/v2/posts/${id}?`)
         .then((res) => res.json())
         .then((res) => {
+          const image = res.yoast_head_json.og_image[0];
           document.getElementById('headline').value = res.title.rendered;
           document.getElementById('writerByline').value = `${res.writer.join(', ')}, ${res.jobtitle.join('')}`;
           document.getElementById('photoByline').value = res.photographer.replace('|', ',');
           document.getElementById('storyText').value = res.excerpt.rendered.replace("<p>", "").replace("</p>", "");
-          document.getElementById('imageUrl').value = res.yoast_head_json.og_image[0].url;
+          document.getElementById('imageUrl').value = image.url;
+          document.getElementById('imageStyle').value = image.width > image.height ? "l" : "p-l";
           paintCanvasFromForm();
         });
       });
